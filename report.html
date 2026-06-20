@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Issue - Fix Darbhanga</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <div class="container" style="max-width: 700px; margin: 50px auto;">
+        <div class="card card-body">
+            <h2>Report a Civic Issue</h2>
+            <form id="reportForm">
+                <input type="text" id="title" placeholder="What is the issue? (e.g. Broken pothole at Tower Chowk)" required>
+                
+                <select id="category" required>
+                    <option value="">Select Category</option>
+                    <option value="Roads">Broken Roads</option>
+                    <option value="Electricity">Electricity Issue</option>
+                    <option value="Water">Water Supply</option>
+                    <option value="Garbage">Garbage / Sanitation</option>
+                    <option value="University">University/School</option>
+                    <option value="Safety">Public Safety</option>
+                </select>
+
+                <textarea id="description" rows="4" placeholder="Describe the problem in detail..."></textarea>
+                
+                <label>Upload Photos</label>
+                <input type="file" id="imageInput" multiple accept="image/*" required>
+
+                <p>Location: <span id="locStatus" style="font-weight: bold; color: var(--primary);">Detecting...</span></p>
+                <div id="map"></div>
+                <input type="hidden" id="lat"><input type="hidden" id="lng">
+
+                <label><input type="checkbox" id="anonymous"> Report Anonymously</label>
+                
+                <button type="submit" id="submitBtn" class="btn btn-primary">Submit Report</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="js/report.js"></script>
+</body>
+</html>
