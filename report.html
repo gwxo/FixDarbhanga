@@ -5,36 +5,64 @@
     <title>Report Issue - Fix Darbhanga</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { height: 300px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; }
+        .report-card { max-width: 600px; margin: 40px auto; padding: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+    </style>
 </head>
 <body>
-    <div class="container" style="max-width: 700px; margin: 50px auto;">
-        <div class="card card-body">
-            <h2>Report a Civic Issue</h2>
+    <nav>
+        <div class="container nav-content">
+            <a href="index.html" class="logo">Fix Darbhanga</a>
+            <a href="feed.html" class="btn btn-outline">Back to Feed</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card report-card">
+            <h2>Report a New Issue</h2>
+            <p style="color: #666; margin-bottom: 20px;">Pin the location on the map and describe the problem.</p>
+            
             <form id="reportForm">
-                <input type="text" id="title" placeholder="What is the issue? (e.g. Broken pothole at Tower Chowk)" required>
+                <div class="form-group">
+                    <label>Issue Title</label>
+                    <input type="text" id="title" placeholder="e.g., Large pothole near LNMU Gate" required>
+                </div>
                 
-                <select id="category" required>
-                    <option value="">Select Category</option>
-                    <option value="Roads">Broken Roads</option>
-                    <option value="Electricity">Electricity Issue</option>
-                    <option value="Water">Water Supply</option>
-                    <option value="Garbage">Garbage / Sanitation</option>
-                    <option value="University">University/School</option>
-                    <option value="Safety">Public Safety</option>
-                </select>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category" required>
+                        <option value="">-- Select Category --</option>
+                        <option value="Roads">Broken Roads</option>
+                        <option value="Garbage">Garbage / Sanitation</option>
+                        <option value="Drainage">Drainage Problems</option>
+                        <option value="Electricity">Electricity Issue</option>
+                        <option value="Water">Water Shortage</option>
+                        <option value="Safety">Public Safety</option>
+                    </select>
+                </div>
 
-                <textarea id="description" rows="4" placeholder="Describe the problem in detail..."></textarea>
-                
-                <label>Upload Photos</label>
-                <input type="file" id="imageInput" multiple accept="image/*" required>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="4" placeholder="Explain the issue in detail..." required></textarea>
+                </div>
 
-                <p>Location: <span id="locStatus" style="font-weight: bold; color: var(--primary);">Detecting...</span></p>
-                <div id="map"></div>
-                <input type="hidden" id="lat"><input type="hidden" id="lng">
+                <div class="form-group">
+                    <label>Select Location (Drag the marker)</label>
+                    <div id="map"></div>
+                    <input type="hidden" id="lat" value="26.1542">
+                    <input type="hidden" id="lng" value="85.8918">
+                </div>
 
-                <label><input type="checkbox" id="anonymous"> Report Anonymously</label>
-                
-                <button type="submit" id="submitBtn" class="btn btn-primary">Submit Report</button>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="anonymous"> Report Anonymously
+                    </label>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%;">Submit Report</button>
             </form>
         </div>
     </div>
