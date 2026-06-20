@@ -2,47 +2,76 @@ import { auth, db } from './firebase-config.js';
 import { 
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword, 
+    updateProfile,
     GoogleAuthProvider, 
-    signInWithPopup, 
-    onAuthStateChanged 
+    signInWithPopup 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- Tab Switching Logic ---
-const loginTab = document.getElementById('loginTab');
-const registerTab = document.getElementById('registerTab');
-const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
+// --- UI Toggle Logic ---
+const showLogin = document.getElementById('showLogin');
+const showRegister = document.getElementById('showRegister');
+const loginSection = document.getElementById('loginSection');
+const registerSection = document.getElementById('registerSection');
 
-loginTab?.addEventListener('click', () => {
-    loginTab.classList.add('active');
-    registerTab.classList.remove('active');
-    loginForm.classList.remove('hidden');
-    registerForm.classList.add('hidden');
+showLogin.addEventListener('click', () => {
+    showLogin.classList.add('active');
+    showRegister.classList.remove('active');
+    loginSection.classList.remove('hidden');
+    registerSection.classList.add('hidden');
 });
 
-registerTab?.addEventListener('click', () => {
-    registerTab.classList.add('active');
-    loginTab.classList.remove('active');
-    registerForm.classList.remove('hidden');
-    loginForm.classList.add('hidden');
+showRegister.addEventListener('click', () => {
+    showRegister.classList.add('active');
+    showLogin.classList.remove('active');
+    registerSection.classList.remove('hidden');
+    loginSection.classList.add('hidden');
 });
 
-// --- Helper: Save User to Firestore ---
-async function saveUserToFirestore(user, name = null) {
-    const userRef = doc(db, "users", user.uid);
-    await setDoc(userRef, {
-        uid: user.uid,
-        name: name || user.displayName || "Anonymous User",
-        email: user.email,
-        photoURL: user.photoURL || "",
-        role: 'user',
-        createdAt: new Date()
-    }, { merge: true });
+// --- Helper Function: Sync User to Firestore ---
+async function createUserProfile(user, name) {
+    try {
+        await setDoc(doc(db, "users", user.uid), {
+            uid: user.uid,
+            name: name || user.displayName,
+            email: user.email,
+            photoURL: user.photoURL || "",
+            role: 'user',
+            createdAt: new Date()
+        }, { merge: true });
+    } catch (err) {
+        console.error("Firestore Error:", err);
+    }
 }
 
-// --- Email/Password Login ---
-loginForm?.addEventListener('submit', async (e) => {
+// --- Registration Logic ---
+const registerForm = document.getElementById('registerForm');
+registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    const pass = document.getElementById('regPassword').value;
+
+    if(pass.length < 6) return alert("Password too short!");
+
+    try {
+        // 1. Create the user
+        const result = await createUserWithEmailAndPassword(auth, email, pass);
+        // 2. Set display name in Auth
+        await updateProfile(result.user, { displayName: name });
+        // 3. Save to Firestore
+        await createUserProfile(result.user, name);
+        
+        alert("Registration Successful!");
+        window.location.href = 'dashboard.html';
+    } catch (error) {
+        alert("Register Error: " + error.message);
+    }
+});
+
+// --- Login Logic ---
+const loginForm = document.getElementById('loginForm');
+loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const pass = document.getElementById('loginPassword').value;
@@ -51,46 +80,18 @@ loginForm?.addEventListener('submit', async (e) => {
         await signInWithEmailAndPassword(auth, email, pass);
         window.location.href = 'dashboard.html';
     } catch (error) {
-        alert("Login failed: " + error.message);
+        alert("Login Error: " + error.message);
     }
 });
 
-// --- Email/Password Register ---
-registerForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('regName').value;
-    const email = document.getElementById('regEmail').value;
-    const pass = document.getElementById('regPassword').value;
-
-    try {
-        const result = await createUserWithEmailAndPassword(auth, email, pass);
-        await saveUserToFirestore(result.user, name);
-        window.location.href = 'dashboard.html';
-    } catch (error) {
-        alert("Registration failed: " + error.message);
-    }
-});
-
-// --- Google Login ---
-document.getElementById('googleBtn')?.addEventListener('click', async () => {
+// --- Google Sign In Logic ---
+document.getElementById('googleBtn').addEventListener('click', async () => {
     const provider = new GoogleAuthProvider();
     try {
         const result = await signInWithPopup(auth, provider);
-        await saveUserToFirestore(result.user);
+        await createUserProfile(result.user);
         window.location.href = 'dashboard.html';
     } catch (error) {
-        alert("Google Sign-in failed: " + error.message);
-    }
-});
-
-// --- Auth State Listener for Navigation ---
-onAuthStateChanged(auth, (user) => {
-    const authSection = document.getElementById('authSection');
-    if (authSection) {
-        if (user) {
-            authSection.innerHTML = `<a href="dashboard.html" class="btn btn-outline">Dashboard</a>`;
-        } else {
-            authSection.innerHTML = `<a href="auth.html" class="btn btn-outline">Login</a>`;
-        }
+        alert("Google Login Error: " + error.message);
     }
 });
