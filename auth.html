@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Register - Fix Darbhanga</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container { max-width: 400px; margin: 50px auto; padding: 20px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; }
+        .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        .hidden { display: none; }
+        .google-btn { 
+            background: white; border: 1px solid #ddd; width: 100%; margin-top: 15px; 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .google-btn img { width: 20px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container nav-content">
+            <a href="index.html" class="logo">Fix Darbhanga</a>
+        </div>
+    </nav>
+
+    <div class="container auth-container card">
+        <div class="tabs">
+            <div class="tab active" id="loginTab">Login</div>
+            <div class="tab" id="registerTab">Register</div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Email Address" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="hidden">
+            <input type="text" id="regName" placeholder="Full Name" required>
+            <input type="email" id="regEmail" placeholder="Email Address" required>
+            <input type="password" id="regPassword" placeholder="Password (Min 6 chars)" required>
+            <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+
+        <hr style="margin: 20px 0;">
+        
+        <button id="googleBtn" class="btn google-btn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg">
+            Continue with Google
+        </button>
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>
